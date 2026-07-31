@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class EmissaoCertidaoNegativaDebitosTest {
+class EmissaoCertidaoTest {
     // Teste do Cenário 1: Emissão de certidão para CPF regular
     @Test
     public void deveEmitirCertidaoQuandoCpfRegular() {
