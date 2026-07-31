@@ -10,7 +10,7 @@ class EmissaoCertidaoTest {
     public void deveEmitirCertidaoQuandoCpfRegular() {
         Cpf cpf = new Cpf("111.444.777-35");
         PessoaFisica pessoa = new PessoaFisica(cpf, false);
-        EmissorCertidao emissor = new EmissorCertidao();
+        EmissorCertidao emissor = new EmissorCertidao(pessoa);
 
         Certidao certidao = emissor.emitirCertidao(pessoa);
 
@@ -22,7 +22,7 @@ class EmissaoCertidaoTest {
     public void deveInformarQueCertidaoEmitidaEhValida() {
         Cpf cpf = new Cpf("111.444.777-35");
         PessoaFisica pessoa = new PessoaFisica(cpf, false);
-        EmissorCertidao emissor = new EmissorCertidao();
+        EmissorCertidao emissor = new EmissorCertidao(pessoa);
 
         Certidao certidao = emissor.emitirCertidao(pessoa);
 
@@ -40,7 +40,7 @@ class EmissaoCertidaoTest {
     public void naoDeveEmitirCertidaoQuandoCpfComDebito() {
         Cpf cpf = new Cpf("222.555.888-46");
         PessoaFisica pessoa = new PessoaFisica(cpf, true);
-        EmissorCertidao emissor = new EmissorCertidao();
+        EmissorCertidao emissor = new EmissorCertidao(pessoa);
 
         IllegalStateException ex = assertThrows(
                 IllegalStateException.class,
@@ -58,9 +58,9 @@ class EmissaoCertidaoTest {
     // Teste do Cenário 4: Bloqueio da emissão quando CPF é inválido
     @Test
     public void naoDeveEmitirCertidaoParaCpfInvalido() {
-        Cpf cpf = new Cpf("222.555.888-46");
-        PessoaFisica pessoa = new PessoaFisica(cpf, true);
-        EmissorCertidao emissor = new EmissorCertidao();
+        Cpf cpf = new Cpf("123.456.789-00");
+        PessoaFisica pessoa = new PessoaFisica(cpf, false);
+        EmissorCertidao emissor = new EmissorCertidao(pessoa);
 
         IllegalStateException ex = assertThrows(
                 IllegalStateException.class,
@@ -70,7 +70,7 @@ class EmissaoCertidaoTest {
 
         String mensagem = ex.getMessage() == null ? "" : ex.getMessage().toLowerCase();
         assertTrue(
-                mensagem.equals("CPF inválido"),
+                mensagem.equals("cpf inválido"),
                 "A mensagem deveria informar sobre CPF inválido. Mensagem recebida: " + ex.getMessage()
         );
     }
@@ -78,13 +78,13 @@ class EmissaoCertidaoTest {
     // Teste do Cenário 5: Tentativa de emitir certidão para CPF arbritário
     @Test
     public void naoDeveEmitirCertidaoParaCpfDiferenteDoPortador() {
-        Cpf cpf = new Cpf("222.555.888-46");
-        PessoaFisica pessoa = new PessoaFisica(cpf, true);
-        EmissorCertidao emissor = new EmissorCertidao();
+        PessoaFisica usuarioAutenticado = new PessoaFisica(new Cpf("111.444.777-35"), false);
+        PessoaFisica terceiro = new PessoaFisica(new Cpf("222.555.888-46"), false);
+        EmissorCertidao emissor = new EmissorCertidao(usuarioAutenticado);
 
         IllegalStateException ex = assertThrows(
                 IllegalStateException.class,
-                () -> emissor.emitirCertidao(pessoa),
+                () -> emissor.emitirCertidao(terceiro),
                 "Deveria ter lançado exceção de segurança"
         );
     }

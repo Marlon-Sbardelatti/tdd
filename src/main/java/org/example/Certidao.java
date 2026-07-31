@@ -48,6 +48,9 @@ public class Certidao {
     }
 
     public boolean isValida() {
-        return false;
+        return numeroCertidao != null
+                && assinaturaDigital != null && !assinaturaDigital.isBlank()
+                && dataEmissao != null
+                && cpfPortador != null && Cpf.isValido(cpfPortador.getValor());
     }
 }
