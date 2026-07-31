@@ -8,9 +8,9 @@ class EmissaoCertidaoTest {
     // Teste do Cenário 1: Emissão de certidão para CPF regular
     @Test
     public void deveEmitirCertidaoQuandoCpfRegular() {
-        Cpf cpf = new Cpf("111.444.777-35");
+        Cpf cpf = new Cpf("081.136.189-61");
         PessoaFisica pessoa = new PessoaFisica(cpf, false);
-        EmissorCertidao emissor = new EmissorCertidao();
+        EmissorCertidao emissor = new EmissorCertidao(pessoa);
 
         Certidao certidao = emissor.emitirCertidao(pessoa);
 
@@ -20,9 +20,9 @@ class EmissaoCertidaoTest {
     // Teste do Cenário 2: Validação de certidão emitida com número, assinatura e data corretos
     @Test
     public void deveInformarQueCertidaoEmitidaEhValida() {
-        Cpf cpf = new Cpf("111.444.777-35");
+        Cpf cpf = new Cpf("081.136.189-61");
         PessoaFisica pessoa = new PessoaFisica(cpf, false);
-        EmissorCertidao emissor = new EmissorCertidao();
+        EmissorCertidao emissor = new EmissorCertidao(pessoa);
 
         Certidao certidao = emissor.emitirCertidao(pessoa);
 
@@ -40,7 +40,7 @@ class EmissaoCertidaoTest {
     public void naoDeveEmitirCertidaoQuandoCpfComDebito() {
         Cpf cpf = new Cpf("222.555.888-46");
         PessoaFisica pessoa = new PessoaFisica(cpf, true);
-        EmissorCertidao emissor = new EmissorCertidao();
+        EmissorCertidao emissor = new EmissorCertidao(pessoa);
 
         IllegalStateException ex = assertThrows(
                 IllegalStateException.class,
@@ -60,7 +60,7 @@ class EmissaoCertidaoTest {
     public void naoDeveEmitirCertidaoParaCpfInvalido() {
         Cpf cpf = new Cpf("222.555.888-46");
         PessoaFisica pessoa = new PessoaFisica(cpf, true);
-        EmissorCertidao emissor = new EmissorCertidao();
+        EmissorCertidao emissor = new EmissorCertidao(pessoa);
 
         IllegalStateException ex = assertThrows(
                 IllegalStateException.class,
@@ -78,13 +78,13 @@ class EmissaoCertidaoTest {
     // Teste do Cenário 5: Tentativa de emitir certidão para CPF arbritário
     @Test
     public void naoDeveEmitirCertidaoParaCpfDiferenteDoPortador() {
-        Cpf cpf = new Cpf("222.555.888-46");
-        PessoaFisica pessoa = new PessoaFisica(cpf, true);
-        EmissorCertidao emissor = new EmissorCertidao();
+        PessoaFisica usuarioAutenticado = new PessoaFisica(new Cpf("111.444.777-35"), false);
+        PessoaFisica terceiro = new PessoaFisica(new Cpf("222.555.888-46"), false);
+        EmissorCertidao emissor = new EmissorCertidao(usuarioAutenticado);
 
         IllegalStateException ex = assertThrows(
                 IllegalStateException.class,
-                () -> emissor.emitirCertidao(pessoa),
+                () -> emissor.emitirCertidao(terceiro),
                 "Deveria ter lançado exceção de segurança"
         );
     }
